@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Team Titan</title>
+	<!-- We need to bring in the bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+	<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" integrity="sha384-+ENW/yibaokMnme+vBLnHMphUYxHs34h9lpdbSLuAwGkOKFRl4C34WkjazBtb7eT" crossorigin="anonymous">
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+<body>
+
+	<div class="container">
+		<div class="row">
+		  <div class="col-lg-12">
+
+	<nav class="navbar navbar-default">
+ 		<div class="container-fluid">
+   		<div class="navbar-header">
+
+    	<a class="navbar-brand" id="text-center" href="#">New York Times Search</a>
+    	</div>
+    	</div>
+    </nav>
+		<br><br>
+
+	<div class="container">
+		<div class="row">
+		  <div class="col-lg-12">
+			<!-- The content in this div gets wrapped in a panel -->
+			<div class="panel panel-primary">
+  			<div class="panel-heading">
+   				 <h3 class="panel-title">Search Parameters</h3>
+ 		 	</div>
+ 		 		<div class="panel-body">
+   			 		
+		<form>
+ 			<div class="form-group">
+   				<label for="searchTerm">Search Term: </label>
+    			<input type="text" class="form-control" id="searchTerm">
+  			</div>
+  			<div class="form-group">
+   				<label for="numRecords">Number of Records to Retrieve:</label>
+    			<input type="text" class="form-control" id="numRecords">
+    			<div class="form-group">
+   				<label for="startYear">Start Year (Optional):</label>
+    			<input type="text" class="form-control" id="startYear">
+    			<div class="form-group">
+   				<label for="endYear">End Year (Optional:</label>
+    			<input type="text" class="form-control" id="endYear">
+    			<br>
+    			<input id="findSearch" type="submit" value="Submit">
+    			<br> 
+    			<input id="findSearch" type="clear" value="Clear Results">
+  			</div>
+			</div>
+  			</div>
+  		</form>
+  				</div>
+		   </div>
+		   </div>
+		</div>	
+	</div>		
+
+	<div class="container">
+		<div class="row">
+		  <div class="col-lg-12">
+	
+		<div class="panel panel-primary">
+  			<div class="panel-heading">
+   				 <h3 class="panel-title">Top Articles</h3>
+ 		 	</div>
+ 		 	<div class="panel-body">
+   			</div>
+		</div>
+ 	
+
+	<div class="clear"></div>
+	</div>
+
+	<footer>
+		<h6 class="text-center">Made by Team Titan</h6>
+	</footer>
+</body>
+</html>
+
+		<script src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
+    	<script type="text/javascript">
+
+		var searchResults = "";
+		var searchNumber = 10;
+		var searchStart = null;
+		var searchEnd = null;
+    $('#findSearch').on('click', function(){
+        // Here we grab the text from the input box 
+        searchResults = $('#searchTerm').val().trim();
+        searchNumber = $("#numRecords").val();
+        searchStart = $("#startYear").val();
+        searchEnd = $("#endYear").val();
+        
+        //console.log(searchTerm);
+        displaySearchResults();
+        return false;
+    }); 
+    function displaySearchResults(){
+        $("#articleInfo").empty();
+        //var searchWords = ;
+        //console.log(searchWords);
+        //var searchNum = $(this).attr('data-name');
+            // Here we assemble our URL 
+        var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchResults + "&api_key=12fa636927f44547bb0687af4cf8a35c";
+        console.log(queryURL);
+        console.log(searchStart);
+        console.log(searchEnd);
+        if(searchNumber != null){
+            
+        } else {
+            searchNumber = 10;
+        }
+    /*  if (searchStart != null) {
+            $(queryURL).append("&?begin_date=" + searchStart);
+            console.log(queryURL);
+          }
+        if (searchEnd != null) {
+            $(queryURL).append('&?end_date='+searchEnd);
+            console.log(queryURL);
+          }*/
+        $.ajax({url: queryURL, method: "GET"}).done(function(response){
+            console.log(response);
+            for(var i = 0;i<searchNumber;i++){
+                var artDiv = $('<div class="articleContainer">');
+                var article = response.response.docs[i];
+                var headline = article.headline.main;
+                var pThree = $("<p>").text("Headline: " + headline);
+                artDiv.append(pThree);
+                var leadParagraph = article.lead_paragraph;
+                var pOne = $('<p>').text( "Lead Paragraph: " + leadParagraph);
+                artDiv.append(pOne);
+                var weburl = article.web_url;
+                /*var pTwo = $('<p>').text("Web URL: " + weburl);
+                artDiv.append(pTwo);*/
+                var anchorDiv = $("<a href="+weburl+">");
+                anchorDiv.append(weburl);
+                //anchorDiv.append(headline);
+                $(artDiv).append(anchorDiv).append('<br><br><hr>');
+                $('#articleInfo').prepend(artDiv);
+            }
+        });
+    }
+
+   
+
+    </script>
